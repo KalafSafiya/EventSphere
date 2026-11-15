@@ -73,11 +73,10 @@ The agents operate inside the same FastAPI application and exchange messages thr
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `REPLACE_WITH_ADMIN_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
-| Gate Staff | `REPLACE_WITH_STAFF_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
-| Attendee | `REPLACE_WITH_ATTENDEE_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
+| Admin | kalafsafiya2019@gmail.com | abc@1234 |
+| Gate Staff | gatestaff01@gmail.com | 12345678 |
+| Attendee | jane@gmail.com | 12345678 |
 
-> **Before submission:** Replace these placeholders with working, dedicated demo accounts. Avoid publishing passwords for personal or production accounts. If the repository is public, remember that anyone can see the credentials.
 
 ## 🛠️ Built with
 
