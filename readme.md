@@ -1,371 +1,199 @@
-# EventSphere
+<div align="center">
+
+# 🎟️ EventSphere
+
 ### Multi-Agent Event Management System
 
-**Module:** IT4123 – Agent Based Computing (ICA 02)  
-**Name:** Safiya Kalaf  
-**Registration Number:** 2021/ICT/71  
-**University:** University of Vavuniya  
-**Date:** 15th November 2026
+*From event discovery to ticket check-in, powered by collaborating software agents.*
+
+**IT4123 · Agent Based Computing (ICA 02)**  
+**University of Vavuniya**
+
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/ec2/) [![Tests](https://img.shields.io/badge/Pytest-34%20Passed-2E8B57)](#testing)
+
+**[🌐 Live Application](https://eventsphere-safiya.duckdns.org)** · **[💻 GitHub Repository](https://github.com/KalafSafiya/EventSphere)** · **[🚀 Run Locally](#run-locally)** · **[🧪 Tests](#testing)**
+
+</div>
 
 ---
 
-## 1. About the Project
+## ✨ What is EventSphere?
 
-EventSphere is a web-based event management system that I developed for my Agent Based Computing assignment.
+EventSphere is a web-based event management platform I built to explore **agent-based computing** in a practical setting. Attendees can discover events, book tickets, complete simulated payments, receive QR tickets, and join waitlists. Administrators manage events and venues, while Gate Staff handle ticket check-in.
 
-The main idea of this project is to use different agents to manage event-related tasks. Instead of handling everything in one place, I created separate agents for booking tickets, managing QR tickets, handling waitlists, sending notifications, and checking venue availability.
+Behind these features, **five software agents** take responsibility for different tasks and exchange messages through a dispatcher. For example, when a booking is cancelled, released tickets can be offered to someone on the waitlist, with a notification created automatically.
 
-Users can browse events, book tickets, make simulated payments, get QR tickets, and join a waitlist when tickets are sold out. The system also supports private venue bookings and has an admin dashboard.
+### At a glance
 
-I wanted to build a system where the agents could communicate with each other and complete tasks automatically.
+| 🎫 Booking & QR tickets | ⏳ Smart waitlists | 🏛️ Venue management |
+|---|---|---|
+| Ticket availability, simulated payments, and duplicate check-in protection | Time-limited offers and ticket release | Private-hire requests and conflict checks |
 
-For example, when someone cancels a booking, the system releases those tickets. The WaitlistAgent then checks whether anyone is waiting for tickets. If there is a suitable user, the agent creates an offer and asks the NotificationAgent to notify that user.
+| 👤 Attendee | 🛡️ Gate Staff | ⚙️ Admin |
+|---|---|---|
+| Browse, book, and view tickets | Validate tickets at entry | Manage events, venues, and staff roles |
 
-This is one of the main examples of how agents work together in EventSphere.
+> **Note:** Payments are simulated. No real money is collected.
 
-## 2. Main Features
+## 🤖 Meet the agents
 
-### User Management
-- User registration and login
-- Different user roles
-- Secure authentication
-- Access restrictions based on user roles
-
-### Event Management
-- View available events
-- View event details
-- Create and manage events
-- Publish and cancel events
-
-### Ticket Booking
-- Book tickets for events
-- Check ticket availability
-- Calculate the total booking price
-- Make simulated payments
-- Cancel bookings
-- Release tickets after cancellation or failed payment
-
-### QR Tickets
-- Generate QR tickets after successful booking
-- View booked tickets
-- Scan tickets during check-in
-- Prevent the same ticket from being used twice
-
-### Waitlist
-- Join a waitlist when enough tickets are not available
-- Receive ticket offers when tickets become available
-- Accept ticket offers within 15 minutes
-- Automatically expire unused offers
-- Release tickets when an offer expires
-
-### Notifications
-- Ticket availability notifications
-- Waitlist offer expiration notifications
-- Booking confirmation notifications
-- Booking cancellation notifications
-
-### Venue Booking
-- View venues
-- Request venues for private events
-- Check venue availability
-- Prevent overlapping venue bookings
-- Manage private-hire requests
-
-### Admin Dashboard
-- View system statistics
-- View recent bookings
-- Monitor agent messages
-- Manage private-hire requests
-
-## 3. Technologies Used
-
-| Part | Technology |
+| Agent | Responsibility |
 |---|---|
-| Backend | Python, FastAPI |
-| Frontend | HTML, CSS, JavaScript, Bootstrap |
-| Database | SQLite |
-| Database ORM | SQLAlchemy |
-| Templates | Jinja2 |
-| QR Code | Python qrcode |
-| Background Scheduler | APScheduler |
-| Testing | pytest |
-| API Documentation | Swagger UI |
+| **BookingAgent** | Checks availability and reserves tickets |
+| **TicketAgent** | Generates and validates QR tickets |
+| **WaitlistAgent** | Manages waiting users and 15-minute ticket offers |
+| **NotificationAgent** | Creates in-app notifications |
+| **VenueAgent** | Checks venue availability and private-hire conflicts |
 
-I used FastAPI for the backend because it is easy to work with and helps organize the APIs.
+### How they work together
 
-For the frontend, I used HTML, CSS, JavaScript, and Bootstrap.
+A booking cancellation is one example of agent collaboration:
 
-I used SQLite to store users, events, bookings, tickets, notifications, and agent messages.
-
-## 4. Agents Used in the System
-
-There are five main agents in EventSphere.
-
-### 1. BookingAgent
-
-The BookingAgent handles ticket booking requests.
-
-It checks whether the event is available, whether it has started, and whether enough tickets are left.
-
-If tickets are available, the agent reserves them and calculates the total price.
-
-If the booking cannot be completed, it rejects the request with a reason.
-
-### 2. TicketAgent
-
-The TicketAgent manages QR tickets.
-
-It creates tickets for confirmed bookings and checks them during event entry.
-
-It also makes sure that the same ticket cannot be used more than once.
-
-### 3. WaitlistAgent
-
-The WaitlistAgent manages users who are waiting for tickets.
-
-When an event does not have enough tickets, users can join the waitlist.
-
-If someone cancels a booking, the WaitlistAgent checks the waiting users and offers the available tickets.
-
-Each offer is valid for 15 minutes. If the user does not accept it within that time, the tickets are released.
-
-### 4. NotificationAgent
-
-The NotificationAgent creates notifications for users.
-
-For example, when the WaitlistAgent creates a ticket offer, it sends a message to the NotificationAgent.
-
-The NotificationAgent then creates a notification that the user can see in the application.
-
-### 5. VenueAgent
-
-The VenueAgent manages venue availability.
-
-It checks whether a venue is already booked for a requested time.
-
-It also helps handle private-hire requests and avoids scheduling conflicts.
-
-## 5. How the Agents Communicate
-
-The agents communicate by sending messages to each other.
-
-Each message contains information such as:
-
-- Sender
-- Receiver
-- Message type (performative)
-- Message content
-- Conversation ID
-- Time
-
-The system uses these message types:
-
-| Message | Meaning |
-|---|---|
-| REQUEST | Ask an agent to do something |
-| AGREE | Accept a request |
-| REFUSE | Reject a request |
-| INFORM | Share information or a result |
-| FAILURE | Report that an operation failed |
-
-All agent messages are stored in the database.
-
-I also added an agent message log in the admin dashboard so the communication between agents can be viewed.
-
-The agents run inside the same Python application and use a dispatcher to send messages to the correct agent.
-
-## 6. Example of Agents Working Together
-
-One example is when a user cancels a ticket booking.
-
-1. The user cancels the booking.
-2. The system releases the reserved tickets.
-3. A message is sent to the WaitlistAgent.
-4. The WaitlistAgent checks whether anyone is waiting for tickets.
-5. If tickets can be offered, the agent creates a 15-minute offer.
-6. The WaitlistAgent sends a message to the NotificationAgent.
-7. The NotificationAgent creates a notification for the waiting user.
-8. If the offer expires, the tickets are released again.
-
-This workflow shows how two agents can communicate and complete a task together.
-
-## 7. Project Structure
-
-```text
-backend/
-│
-├── app/
-│   ├── agents/
-│   │   ├── booking_agent.py
-│   │   ├── ticket_agent.py
-│   │   ├── waitlist_agent.py
-│   │   ├── notification_agent.py
-│   │   ├── venue_agent.py
-│   │   ├── dispatcher.py
-│   │   └── scheduler.py
-│   │
-│   ├── routers/
-│   │   ├── admin.py
-│   │   ├── auth.py
-│   │   ├── bookings.py
-│   │   ├── checkin.py
-│   │   ├── events.py
-│   │   ├── notifications.py
-│   │   ├── payments.py
-│   │   ├── private_hires.py
-│   │   ├── tickets.py
-│   │   ├── users.py
-│   │   ├── venues.py
-│   │   └── waitlist.py
-│   │
-│   ├── templates/
-│   ├── static/
-│   ├── main.py
-│   ├── models.py
-│   ├── database.py
-│   ├── schemas.py
-│   ├── auth.py
-│   ├── csrf.py
-│   └── security.py
-│
-├── tests/
-│   ├── conftest.py
-│   ├── test_main.py
-│   ├── test_api_security.py
-│   ├── test_booking_agent.py
-│   ├── test_payment.py
-│   ├── test_ticket_checkin.py
-│   └── test_waitlist_integration.py
-│
-├── requirements.txt
-├── pytest.ini
-├── .gitignore
-└── README.md
+```mermaid
+flowchart TD
+    A[Attendee cancels booking] --> B[Tickets released]
+    B --> C[WaitlistAgent checks waiting users]
+    C --> D{Eligible attendee?}
+    D -- Yes --> E[Create 15-minute ticket offer]
+    E --> F[NotificationAgent creates notification]
+    D -- No --> G[Tickets remain available]
+    E --> H{Offer accepted in time?}
+    H -- No --> I[Offer expires and tickets are released]
+    H -- Yes --> J[Continue booking workflow]
 ```
 
-## 8. How to Run the Project
+The agents operate inside the same FastAPI application and exchange messages through a dispatcher. Messages record the sender, receiver, performative (such as `REQUEST`, `INFORM`, or `FAILURE`), content, conversation ID, and time. Administrators can view the agent message log.
 
-**Step 1:** Open the backend folder in your terminal.
+## 🌐 Try the live application
 
-```cmd
-cd eventsphere\backend
-```
+**Live URL:** https://eventsphere-safiya.duckdns.org  
+**Repository:** https://github.com/KalafSafiya/EventSphere
 
-**Step 2:** Create a virtual environment.
+### Demo accounts
 
-```cmd
+| Role | Email | Password |
+|---|---|---|
+| Admin | `REPLACE_WITH_ADMIN_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
+| Gate Staff | `REPLACE_WITH_STAFF_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
+| Attendee | `REPLACE_WITH_ATTENDEE_DEMO_EMAIL` | `REPLACE_WITH_DEMO_PASSWORD` |
+
+> **Before submission:** Replace these placeholders with working, dedicated demo accounts. Avoid publishing passwords for personal or production accounts. If the repository is public, remember that anyone can see the credentials.
+
+## 🛠️ Built with
+
+**Backend:** Python, FastAPI, SQLAlchemy, APScheduler  
+**Frontend:** HTML, CSS, JavaScript, Bootstrap, Jinja2  
+**Database:** SQLite  
+**Ticketing:** Python `qrcode`  
+**Testing:** pytest  
+**Deployment:** AWS EC2 (Ubuntu), Uvicorn, systemd, DuckDNS, HTTPS
+
+## 🚀 Run locally
+
+<details>
+<summary><strong>1. Clone and set up the project</strong></summary>
+
+Make sure Python and Git are installed.
+
+```bash
+git clone https://github.com/KalafSafiya/EventSphere.git
+cd EventSphere
+git checkout develop
 python -m venv .venv
 ```
 
-**Step 3:** Activate the virtual environment.
+Activate the environment:
 
+**Windows Command Prompt**
 ```cmd
 .venv\Scripts\activate.bat
 ```
 
-**Step 4:** Install the required packages.
+**Linux / macOS**
+```bash
+source .venv/bin/activate
+```
 
-```cmd
+Install dependencies:
+
+```bash
 python -m pip install -r requirements.txt
 ```
 
-**Step 5:** Start the server.
+Run these commands from the directory containing `requirements.txt` and `app/`.
 
-```cmd
+</details>
+
+<details>
+<summary><strong>2. Configure environment variables</strong></summary>
+
+EventSphere reads its database connection from `DATABASE_URL`. If this variable is not set, the application defaults to a local SQLite file:
+
+```env
+DATABASE_URL=sqlite:///./eventsphere.db
+```
+
+| Variable | Purpose | Example |
+|---|---|---|
+| `DATABASE_URL` | Database connection | `sqlite:///./eventsphere.db` |
+
+**Configuration check before submission:** Review the project's authentication and deployment configuration and document any additional required environment-variable **names** here, with safe example values. Do not copy the production `/etc/eventsphere.env` file or publish secret keys.
+
+The application creates its database tables when it starts.
+
+</details>
+
+<details>
+<summary><strong>3. Start EventSphere</strong></summary>
+
+```bash
 python -m uvicorn app.main:app --reload
 ```
 
-**Step 6:** Open the application in your browser.
+Open the application at **http://127.0.0.1:8000**.
 
-http://127.0.0.1:8000
+FastAPI's interactive API documentation is available at **http://127.0.0.1:8000/docs**.
 
-API documentation:
+</details>
 
-http://127.0.0.1:8000/docs
+## 🧪 Testing
 
-The database tables are created automatically when the application starts.
+EventSphere uses **pytest** to check core application workflows and agent interactions.
 
-## 9. Testing
+```bash
+python -m pytest -q
+```
 
-I tested the main features of EventSphere using pytest.
+For detailed results:
 
-The tests include:
-
-- User authentication and API security
-- BookingAgent ticket reservations
-- Checking ticket availability
-- Successful and failed payments
-- Preventing duplicate payments
-- QR ticket check-in
-- Booking cancellation
-- Waitlist ticket offers
-- Expired waitlist offers
-- Notification creation
-- Communication between agents
-
-To run the tests:
-
-```cmd
+```bash
 python -m pytest tests -v
 ```
 
-**Test Result: 34 tests passed.**
+**Latest verified local result: 34 tests passed.**
 
-I also tested the application manually through the browser to check registration, login, booking, payments, tickets, waitlists, notifications, and private-hire requests.
+The test suite covers authentication and security, ticket reservations, payment outcomes, duplicate payment prevention, QR ticket check-in, booking cancellation, waitlist offers and expiration, notifications, and agent communication.
 
-## 10. Security
+> **Submission checklist:** The assignment requires at least 10 meaningful tests, including overbooking, double check-in, and **at least one test for each of the five agents**. Confirm those exact cases are represented in the current test suite before submission; a passing total alone does not establish agent-by-agent coverage.
 
-I added some security features to the system, including:
+## ☁️ Deployment
 
-- Password hashing
-- Login sessions
-- Role-based access
-- CSRF protection
-- Checking booking ownership
-- Preventing duplicate payments
-- Preventing QR tickets from being used twice
+EventSphere is hosted on an **AWS EC2 Ubuntu instance**. FastAPI runs through **Uvicorn**, managed by the `eventsphere.service` systemd unit, so it continues running after the SSH session closes. The application uses a server-side SQLite database and is accessible through a DuckDNS domain over HTTPS.
 
-Payments are simulated, so no real money is involved.
+For this academic deployment, the agents run within one Python application rather than as separate services.
 
-## 11. Challenges I Faced
+## 🔒 Security & limitations
 
-While developing EventSphere, I faced a few challenges.
+The application includes password hashing, role-based access controls, CSRF protection, booking ownership checks, and safeguards against duplicate payments and QR check-ins.
 
-**Ticket availability:** I had to make sure that tickets were reserved and released correctly. For example, when a payment fails, the reserved tickets should become available again.
-
-**Agent communication:** Connecting the agents was another challenge. I had to make sure that one agent could send a message to another agent and that the correct action would happen.
-
-**Waitlist handling:** I had to manage ticket offers that expire after 15 minutes and make sure those tickets are released correctly.
-
-**Testing:** Some tests failed because of changes I made during development. I fixed those issues and added more tests to check the main workflows.
-
-**Frontend integration:** I also spent time connecting the frontend pages to the backend APIs and checking that the features worked correctly in the browser.
-
-## 12. Limitations
-
-There are still some things that could be improved in the future.
-
-- Add a real payment gateway
-- Send email or push notifications
-- Use a production database
-- Run agents as separate services
-- Improve testing for multiple users booking at the same time
-
-For now, EventSphere is designed as a working academic project that demonstrates agent-based computing.
-
-## 13. Conclusion
-
-Through this project, I learned how different agents can work together to complete tasks.
-
-The most interesting part was connecting the BookingAgent, WaitlistAgent, and NotificationAgent. When a booking is cancelled, the system can automatically release tickets, offer them to waiting users, and create notifications.
-
-I also gained more experience with FastAPI, databases, frontend development, and automated testing.
-
-EventSphere helped me understand how agent-based computing can be used in a real web application.
+EventSphere is an academic demonstration. Potential future improvements include a real payment gateway, email or push notifications, PostgreSQL for higher concurrency, and stronger testing of simultaneous bookings.
 
 ---
 
+<div align="center">
+
 **Developed by Safiya Kalaf**  
-**Registration Number: 2021/ICT/71**  
-**University of Vavuniya**  
+Registration No. **2021/ICT/71** · University of Vavuniya  
 **IT4123 – Agent Based Computing (ICA 02)**
+
+</div>
