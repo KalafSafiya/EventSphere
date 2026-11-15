@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Private Venue Hire | EventSphere{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="fw-bold">Request Private Venue Hire</h2>
+                    <p class="text-muted mb-4">
+                        Book a venue for your private event.
+                    </p>
+
+                    <form id="privateHireForm">
+                        <div class="mb-3">
+                            <label for="hireVenue" class="form-label">
+                                Venue
+                            </label>
+                            <select id="hireVenue" class="form-select" required>
+                                <option value="">Loading venues...</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="hireStart" class="form-label">
+                                    Start Date & Time
+                                </label>
+                                <input type="datetime-local" id="hireStart" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="hireEnd" class="form-label">
+                                    End Date & Time
+                                </label>
+                                <input type="datetime-local" id="hireEnd" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="hireGuests" class="form-label">
+                                Number of Guests
+                            </label>
+                            <input type="number" id="hireGuests" class="form-control" min="1" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="hirePurpose" class="form-label">
+                                Purpose
+                            </label>
+                            <textarea id="hirePurpose" class="form-control" minlength="3" maxlength="255" rows="3"
+                                required></textarea>
+                        </div>
+
+                        <button type="submit" id="hireSubmitButton" class="btn btn-primary w-100 btn-lg">
+                            Submit Hire Request
+                        </button>
+                    </form>
+
+                    <div id="hireResult" class="mt-3" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

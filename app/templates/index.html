@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}EventSphere | Discover Events{% endblock %}
+
+{% block content %}
+
+<section class="hero text-center text-white py-5">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">
+            Discover Amazing Events
+        </h1>
+
+        <p class="lead mt-3">
+            Explore events, book tickets, and enjoy seamless
+            digital experiences with EventSphere.
+        </p>
+
+        <a href="#events" class="btn btn-light btn-lg mt-3">
+            Explore Events
+        </a>
+    </div>
+</section>
+
+<section class="container my-5" id="events">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Upcoming Events</h2>
+    </div>
+
+    <div class="row g-4" id="eventsContainer">
+        <div class="col-12 text-center">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Loading events...</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

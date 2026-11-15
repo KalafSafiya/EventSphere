@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}My Tickets | EventSphere{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">My Tickets</h2>
+            <p class="text-muted">
+                View your digital tickets and QR codes.
+            </p>
+        </div>
+
+        <a href="/" class="btn btn-outline-primary">
+            Browse Events
+        </a>
+    </div>
+
+    <div id="ticketsContainer" class="row g-4">
+        <div class="col-12">
+            <p>Loading tickets...</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
