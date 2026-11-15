@@ -1,6 +1,6 @@
 
 import secrets
-
+import os
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 
@@ -44,7 +44,7 @@ def login(
         key="eventsphere_session",
         value=token,
         httponly=True,
-        secure=False,  # Local HTTP only; must be True in production HTTPS
+        secure=os.getenv("APP_ENV") == "production",
         samesite="lax",
         max_age=3600,
         path="/"
@@ -56,7 +56,7 @@ def login(
         key="eventsphere_csrf",
         value=csrf_token,
         httponly=False,
-        secure=False,  # Local HTTP only
+        secure=os.getenv("APP_ENV") == "production",
         samesite="lax",
         max_age=3600,
         path="/"

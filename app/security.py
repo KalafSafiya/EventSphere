@@ -6,7 +6,12 @@ from pwdlib import PasswordHash
 
 password_hash = PasswordHash.recommended()
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-before-deployment")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    if os.getenv("APP_ENV") == "production":
+        raise RuntimeError("SECRET_KEY must be set in production")
+    SECRET_KEY = "dev-only-change-before-deployment"
 serializer = URLSafeTimedSerializer(SECRET_KEY, salt="eventsphere-session")
 
 
