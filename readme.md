@@ -1,23 +1,21 @@
 <div align="center">
 
-# 🎟️ EventSphere
+#  EventSphere
 
 ### Multi-Agent Event Management System
-
-*From event discovery to ticket check-in, powered by collaborating software agents.*
 
 **IT4123 · Agent Based Computing (ICA 02)**  
 **University of Vavuniya**
 
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/ec2/) [![Tests](https://img.shields.io/badge/Pytest-34%20Passed-2E8B57)](#testing)
 
-**[🌐 Live Application](https://eventsphere-safiya.duckdns.org)** · **[💻 GitHub Repository](https://github.com/KalafSafiya/EventSphere)** · **[🚀 Run Locally](#run-locally)** · **[🧪 Tests](#testing)**
+**[🌐 Live Application](https://eventsphere-safiya.duckdns.org)** · **[💻 GitHub Repository](https://github.com/KalafSafiya/EventSphere)** · **[🚀 Run Locally](#run-locally)** 
 
 </div>
 
 ---
 
-## ✨ What is EventSphere?
+##  What is EventSphere?
 
 EventSphere is a web-based event management platform I built to explore **agent-based computing** in a practical setting. Attendees can discover events, book tickets, complete simulated payments, receive QR tickets, and join waitlists. Administrators manage events and venues, while Gate Staff handle ticket check-in.
 
@@ -173,8 +171,6 @@ python -m pytest tests -v
 
 The test suite covers authentication and security, ticket reservations, payment outcomes, duplicate payment prevention, QR ticket check-in, booking cancellation, waitlist offers and expiration, notifications, and agent communication.
 
-> **Submission checklist:** The assignment requires at least 10 meaningful tests, including overbooking, double check-in, and **at least one test for each of the five agents**. Confirm those exact cases are represented in the current test suite before submission; a passing total alone does not establish agent-by-agent coverage.
-
 ## ☁️ Deployment
 
 EventSphere is hosted on an **AWS EC2 Ubuntu instance**. FastAPI runs through **Uvicorn**, managed by the `eventsphere.service` systemd unit, so it continues running after the SSH session closes. The application uses a server-side SQLite database and is accessible through a DuckDNS domain over HTTPS.
@@ -192,7 +188,7 @@ EventSphere is an academic demonstration. Potential future improvements include 
 <div align="center">
 
 **Developed by Safiya Kalaf**  
-Registration No. **2021/ICT/71** · University of Vavuniya  
+Registration No. **2021/ICT/71**  
 **IT4123 – Agent Based Computing (ICA 02)**
 
 </div>
