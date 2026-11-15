@@ -1,4 +1,4 @@
-# EventSphere 🎟️
+# EventSphere
 ### Multi-Agent Event Management System
 
 **Module:** IT4123 – Agent Based Computing (ICA 02)  
