@@ -383,13 +383,17 @@ async function initializeAuthentication() {
                 ?.classList.remove("d-none");
         }
 
+
         if (user.role === "admin") {
             document.getElementById("adminDashboardNav")
                 ?.classList.remove("d-none");
 
             document.getElementById("adminHiresNav")
                 ?.classList.remove("d-none");
+
+
         }
+
 
         const nameElement = document.getElementById("currentUserName");
 
@@ -1573,4 +1577,334 @@ async function loadAgentLogs() {
 
     document.getElementById("nextAgentLogs").disabled =
         agentLogsOffset + data.messages.length >= data.total;
+}
+
+
+
+/* ==========================================
+   ADMIN EVENT MANAGEMENT
+========================================== */
+
+function showEventManagementMessage(message, isError = false) {
+    const box = document.getElementById("eventManagementMessage");
+    if (!box) return;
+
+    box.className = isError
+        ? "alert alert-danger"
+        : "alert alert-success";
+
+    box.textContent = message;
+}
+
+async function adminApiRequest(url, options = {}) {
+    const response = await fetch(url, {
+        credentials: "same-origin",
+        ...options
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const detail = data.detail;
+        throw new Error(
+            typeof detail === "string"
+                ? detail
+                : JSON.stringify(detail || data)
+        );
+    }
+
+    return data;
+}
+
+async function loadEventManagementVenues() {
+    const select = document.getElementById("eventVenue");
+    if (!select) return;
+
+    const venues = await adminApiRequest("/venues/");
+
+    select.replaceChildren(new Option("Select a venue", ""));
+
+    venues.forEach(venue => {
+        select.add(new Option(
+            `${venue.name} (Capacity: ${venue.capacity})`,
+            venue.id
+        ));
+    });
+}
+
+async function loadEventManagementEvents() {
+    const tbody = document.getElementById("manageEventsBody");
+    if (!tbody) return;
+
+    const events = await adminApiRequest("/events/");
+    tbody.replaceChildren();
+
+    if (events.length === 0) {
+        const row = tbody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 5;
+        cell.textContent = "No events created yet.";
+        return;
+    }
+
+    events.forEach(event => {
+        const row = tbody.insertRow();
+
+        row.insertCell().textContent = event.title;
+        row.insertCell().textContent = event.category;
+        row.insertCell().textContent =
+            new Date(event.start_time + "Z").toLocaleString();
+        row.insertCell().textContent = event.status;
+
+        const actions = row.insertCell();
+
+        if (event.status === "draft") {
+            const publishButton = document.createElement("button");
+            publishButton.className = "btn btn-success btn-sm me-2";
+            publishButton.textContent = "Publish";
+
+            publishButton.addEventListener("click", async () => {
+                try {
+                    await adminApiRequest(
+                        `/events/${event.id}/publish`,
+                        {
+                            method: "POST",
+                            headers: csrfHeaders(true)
+                        }
+                    );
+
+                    showEventManagementMessage("Event published successfully.");
+                    await loadEventManagementEvents();
+                } catch (error) {
+                    showEventManagementMessage(error.message, true);
+                }
+            });
+
+            actions.appendChild(publishButton);
+        }
+
+        if (event.status !== "cancelled") {
+            const cancelButton = document.createElement("button");
+            cancelButton.className = "btn btn-outline-danger btn-sm";
+            cancelButton.textContent = "Cancel";
+
+            cancelButton.addEventListener("click", async () => {
+                if (!confirm(`Cancel "${event.title}"?`)) return;
+
+                try {
+                    await adminApiRequest(
+                        `/events/${event.id}/cancel`,
+                        {
+                            method: "POST",
+                            headers: csrfHeaders(true)
+                        }
+                    );
+
+                    showEventManagementMessage("Event cancelled.");
+                    await loadEventManagementEvents();
+                } catch (error) {
+                    showEventManagementMessage(error.message, true);
+                }
+            });
+
+            actions.appendChild(cancelButton);
+        }
+    });
+}
+
+function initializeEventManagement() {
+    const venueForm = document.getElementById("createVenueForm");
+    const eventForm = document.getElementById("createEventForm");
+
+    if (!venueForm || !eventForm) return;
+
+    venueForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const venueData = {
+            name: document.getElementById("venueName").value.trim(),
+            location: document.getElementById("venueLocation").value.trim(),
+            capacity: Number(document.getElementById("venueCapacity").value),
+            hourly_rate: Number(document.getElementById("venueRate").value),
+            private_hire_enabled: document.getElementById("venuePrivateHire").checked
+        };
+
+        try {
+            await adminApiRequest("/venues/", {
+                method: "POST",
+                headers: csrfHeaders(true),
+                body: JSON.stringify(venueData)
+            });
+
+            venueForm.reset();
+            showEventManagementMessage("Venue created successfully!");
+            await loadEventManagementVenues();
+        } catch (error) {
+            showEventManagementMessage(error.message, true);
+        }
+    });
+
+    eventForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const start = document.getElementById("eventStart").value;
+        const end = document.getElementById("eventEnd").value;
+
+        const eventData = {
+            title: document.getElementById("eventTitle").value.trim(),
+            description: document.getElementById("eventDescription").value.trim(),
+            category: document.getElementById("eventCategory").value,
+            start_time: new Date(start).toISOString(),
+            end_time: new Date(end).toISOString(),
+            ticket_price: Number(document.getElementById("eventPrice").value),
+            ticket_quantity: Number(document.getElementById("eventQuantity").value),
+            venue_id: Number(document.getElementById("eventVenue").value)
+        };
+
+        try {
+            await adminApiRequest("/events/", {
+                method: "POST",
+                headers: csrfHeaders(true),
+                body: JSON.stringify(eventData)
+            });
+
+            eventForm.reset();
+            showEventManagementMessage(
+                "Event created as a draft! Click Publish to make it visible."
+            );
+
+            await loadEventManagementEvents();
+        } catch (error) {
+            showEventManagementMessage(error.message, true);
+        }
+    });
+
+    loadEventManagementVenues().catch(error =>
+        showEventManagementMessage(error.message, true)
+    );
+
+    loadEventManagementEvents().catch(error =>
+        showEventManagementMessage(error.message, true)
+    );
+}
+
+document.addEventListener("DOMContentLoaded", initializeEventManagement);
+
+
+async function loadStaffUsers() {
+    const select = document.getElementById("staffUserSelect");
+    const message = document.getElementById("staffManagementMessage");
+
+    if (!select) return;
+
+    try {
+        const response = await fetch("/users/", {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to load users (${response.status})`);
+        }
+
+        const users = await response.json();
+
+        select.replaceChildren();
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Select a registered user";
+        select.appendChild(placeholder);
+
+        for (const user of users) {
+            if (user.role === "admin") continue;
+
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent =
+                `${user.name} (${user.email}) - ${user.role}`;
+
+            select.appendChild(option);
+        }
+
+    } catch (error) {
+        message.className = "alert alert-danger mt-3";
+        message.textContent = error.message;
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadStaffUsers);
+} else {
+    loadStaffUsers();
+}
+
+
+async function updateStaffRole(role) {
+    const select = document.getElementById("staffUserSelect");
+    const message = document.getElementById("staffManagementMessage");
+    const assignButton = document.getElementById("assignStaffButton");
+    const revokeButton = document.getElementById("revokeStaffButton");
+
+    if (!select || !message) return;
+
+    const userId = Number(select.value);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+        message.className = "alert alert-warning mt-3";
+        message.textContent = "Please select a registered user.";
+        return;
+    }
+
+    assignButton.disabled = true;
+    revokeButton.disabled = true;
+
+    try {
+        const response = await fetch(`/users/${userId}/role`, {
+            method: "PATCH",
+            credentials: "same-origin",
+            headers: csrfHeaders(true),
+            body: JSON.stringify({ role })
+        });
+
+        await readApiResponse(response);
+
+        await loadStaffUsers();
+
+        select.value = String(userId);
+
+        message.className = "alert alert-success mt-3";
+        message.textContent = role === "staff"
+            ? "Gate Staff access assigned successfully!"
+            : "Gate Staff access revoked successfully!";
+
+    } catch (error) {
+        message.className = "alert alert-danger mt-3";
+        message.textContent = error.message;
+    } finally {
+        assignButton.disabled = false;
+        revokeButton.disabled = false;
+    }
+}
+
+function setupStaffManagement() {
+    const assignButton = document.getElementById("assignStaffButton");
+    const revokeButton = document.getElementById("revokeStaffButton");
+
+    if (!assignButton || !revokeButton) return;
+
+    assignButton.addEventListener("click", () => {
+        updateStaffRole("staff");
+    });
+
+    revokeButton.addEventListener("click", () => {
+        if (confirm("Revoke Gate Staff access for this user?")) {
+            updateStaffRole("attendee");
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupStaffManagement);
+} else {
+    setupStaffManagement();
 }
